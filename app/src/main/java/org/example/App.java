@@ -281,12 +281,12 @@ public class App extends Application {
         HBox featuredBooks = new HBox(15);
         featuredBooks.setPadding(new Insets(10));
         
-        // Crear algunos libros destacados
-        VBox book1 = createFeaturedBook("El Quijote", "Miguel de Cervantes", "#f5b7c4");
-        VBox book2 = createFeaturedBook("1984", "George Orwell", "#a8d0f0");
-        VBox book3 = createFeaturedBook("Cien Años", "Gabriel García Márquez", "#b8e6d3");
-        VBox book4 = createFeaturedBook("El Principito", "Antoine de Saint-Exupéry", "#f5d7a8");
-        VBox book5 = createFeaturedBook("Sapiens", "Yuval Noah Harari", "#d7b8f0");
+        // Crear algunos libros destacados con imágenes reales
+        VBox book1 = createFeaturedBookWithImage("El Quijote", "Miguel de Cervantes", "libro1.jpeg");
+        VBox book2 = createFeaturedBookWithImage("1984", "George Orwell", "libro3.jpeg");
+        VBox book3 = createFeaturedBookWithImage("Cien Años de Soledad", "Gabriel García Márquez", "libro2.jpeg");
+        VBox book4 = createFeaturedBookWithImage("El Señor de los Anillos", "J.R.R. Tolkien", "libro5.jpeg");
+        VBox book5 = createFeaturedBookWithImage("Harry Potter", "J.K. Rowling", "libro6.jpeg");
         
         featuredBooks.getChildren().addAll(book1, book2, book3, book4, book5);
         horizontalScroll.setContent(featuredBooks);
@@ -343,11 +343,80 @@ public class App extends Application {
         bookCard.setOnMouseClicked(e -> {
             showBookDetails(title, author);
         });
-        
+
         return bookCard;
     }
     
-    private VBox createLibraryGrid() {
+    private VBox createFeaturedBookWithImage(String title, String author, String imageName) {
+        VBox bookCard = new VBox(8);
+        bookCard.setAlignment(Pos.CENTER);
+        bookCard.setPrefSize(120, 160);
+        bookCard.setMaxSize(120, 160);
+        bookCard.setMinSize(120, 160);
+        
+        // Portada del libro con imagen real
+        ImageView bookCover = new ImageView();
+        try {
+            Image bookImage = new Image(getClass().getResourceAsStream("/libros/" + imageName));
+            bookCover.setImage(bookImage);
+            bookCover.setFitWidth(80);
+            bookCover.setFitHeight(110);
+            bookCover.setPreserveRatio(true);
+            bookCover.setSmooth(true);
+            bookCover.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+        } catch (Exception e) {
+            // Si no se puede cargar la imagen, usar un color de fondo pastel
+            Region fallback = new Region();
+            fallback.setPrefSize(80, 110);
+            fallback.setMaxSize(80, 110);
+            fallback.setMinSize(80, 110);
+            fallback.setStyle("-fx-background-color: #f5b7c4; " +
+                             "-fx-background-radius: 8; " +
+                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+            bookCard.getChildren().add(fallback);
+            System.out.println("No se pudo cargar la imagen destacada: " + imageName);
+        }
+        
+        // Información del libro
+        Label titleLabel = new Label(title);
+        titleLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        titleLabel.setTextFill(Color.web("#2c3e50"));
+        titleLabel.setMaxWidth(120);
+        titleLabel.setWrapText(true);
+        titleLabel.setAlignment(Pos.CENTER);
+        
+        Label authorLabel = new Label(author);
+        authorLabel.setFont(Font.font("System", 9));
+        authorLabel.setTextFill(Color.web("#7f8c8d"));
+        authorLabel.setMaxWidth(120);
+        authorLabel.setWrapText(true);
+        authorLabel.setAlignment(Pos.CENTER);
+        
+        // Solo agregar la imagen si se cargó correctamente
+        if (bookCover.getImage() != null) {
+            bookCard.getChildren().addAll(bookCover, titleLabel, authorLabel);
+        } else {
+            bookCard.getChildren().addAll(titleLabel, authorLabel);
+        }
+        
+        // Efecto hover
+        bookCard.setOnMouseEntered(e -> {
+            bookCard.setScaleX(1.05);
+            bookCard.setScaleY(1.05);
+            bookCard.setStyle("-fx-cursor: hand;");
+        });
+        
+        bookCard.setOnMouseExited(e -> {
+            bookCard.setScaleX(1.0);
+            bookCard.setScaleY(1.0);
+        });
+        
+        bookCard.setOnMouseClicked(e -> {
+            showBookDetails(title, author);
+        });
+        
+        return bookCard;
+    }    private VBox createLibraryGrid() {
         VBox section = new VBox(15);
         
         Label sectionTitle = new Label("📚 Mi Biblioteca");
