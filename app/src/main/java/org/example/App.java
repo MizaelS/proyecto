@@ -81,9 +81,8 @@ public class App extends Application {
             Label fallbackLogo = new Label("📚");
             fallbackLogo.setFont(Font.font("System", 32));
         }
-        
+
         VBox titleSection = new VBox(2);
-        titleSection.setPadding(new Insets(0, 0, 0, 15));
         
         Label appTitle = new Label("BiblioTech");
         appTitle.setFont(Font.font("System", FontWeight.BOLD, 24));
@@ -108,8 +107,13 @@ public class App extends Application {
                            "-fx-pref-height: 45; " +
                            "-fx-background-radius: 22.5; " +
                            "-fx-border: none;");
+
+        // Cambiar el orden: título a la izquierda, logo a la derecha
+        // Agregar un pequeño espaciador entre el perfil y el logo
+        Region logoSpacer = new Region();
+        logoSpacer.setPrefWidth(15);
         
-        header.getChildren().addAll(logoIcon, titleSection, spacer, profileBtn);
+        header.getChildren().addAll(titleSection, spacer, profileBtn, logoSpacer, logoIcon);
         return header;
     }
     
