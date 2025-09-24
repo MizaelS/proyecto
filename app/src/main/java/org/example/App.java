@@ -360,24 +360,21 @@ public class App extends Application {
         booksGrid.setVgap(15);
         booksGrid.setAlignment(Pos.TOP_LEFT);
         
-        // Crear una colección de libros con colores pastel
+        // Crear una colección de libros con imágenes reales
         String[][] books = {
-            {"Don Quijote", "Miguel de Cervantes", "#f5b7c4"},
-            {"Orgullo y Prejuicio", "Jane Austen", "#f8c8dc"},
-            {"El Gran Gatsby", "F. Scott Fitzgerald", "#d7b8f0"},
-            {"Matar a un Ruiseñor", "Harper Lee", "#c8b6db"},
-            {"1984", "George Orwell", "#a8d0f0"},
-            {"Un Mundo Feliz", "Aldous Huxley", "#b5d6f5"},
-            {"El Señor de los Anillos", "J.R.R. Tolkien", "#a1c9f0"},
-            {"Harry Potter", "J.K. Rowling", "#b8e6e1"},
-            {"Crónica de una Muerte", "Gabriel García Márquez", "#b8e6d3"},
-            {"Los Miserables", "Victor Hugo", "#c4e6c4"},
-            {"Guerra y Paz", "León Tolstói", "#d4edda"},
-            {"El Código Da Vinci", "Dan Brown", "#f5d7a8"}
+            {"El Quijote de la Mancha", "Miguel de Cervantes", "libro1.jpeg"},
+            {"Cien Años de Soledad", "Gabriel García Márquez", "libro2.jpeg"},
+            {"1984", "George Orwell", "libro3.jpeg"},
+            {"Orgullo y Prejuicio", "Jane Austen", "libro4.jpeg"},
+            {"El Señor de los Anillos", "J.R.R. Tolkien", "libro5.jpeg"},
+            {"Harry Potter", "J.K. Rowling", "libro6.jpeg"},
+            {"El Gran Gatsby", "F. Scott Fitzgerald", "libro7.jpeg"},
+            {"Matar a un Ruiseñor", "Harper Lee", "libro8.jpeg"},
+            {"Crimen y Castigo", "Fiódor Dostoyevski", "libro9.jpeg"}
         };
         
         for (int i = 0; i < books.length; i++) {
-            VBox bookCard = createLibraryBook(books[i][0], books[i][1], books[i][2]);
+            VBox bookCard = createLibraryBookWithImage(books[i][0], books[i][1], books[i][2]);
             int row = i / 3;
             int col = i % 3;
             booksGrid.add(bookCard, col, row);
@@ -456,11 +453,93 @@ public class App extends Application {
                              "-fx-background-radius: 12; " +
                              "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
         });
-        
+
         return bookCard;
     }
     
-    private void showBookDetails(String title, String author) {
+    private VBox createLibraryBookWithImage(String title, String author, String imageName) {
+        VBox bookCard = new VBox(10);
+        bookCard.setAlignment(Pos.CENTER);
+        bookCard.setPadding(new Insets(15));
+        bookCard.setStyle("-fx-background-color: white; " +
+                         "-fx-background-radius: 12; " +
+                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        bookCard.setMaxWidth(Double.MAX_VALUE);
+        
+        // Portada del libro con imagen real
+        ImageView bookCover = new ImageView();
+        try {
+            Image bookImage = new Image(getClass().getResourceAsStream("/libros/" + imageName));
+            bookCover.setImage(bookImage);
+            bookCover.setFitWidth(100);
+            bookCover.setFitHeight(130);
+            bookCover.setPreserveRatio(true);
+            bookCover.setSmooth(true);
+            bookCover.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2); " +
+                              "-fx-background-radius: 8;");
+        } catch (Exception e) {
+            // Si no se puede cargar la imagen, usar un color de fondo pastel
+            Region fallback = new Region();
+            fallback.setPrefSize(100, 130);
+            fallback.setMaxSize(100, 130);
+            fallback.setMinSize(100, 130);
+            fallback.setStyle("-fx-background-color: #f5b7c4; " +
+                             "-fx-background-radius: 8; " +
+                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+            bookCard.getChildren().add(fallback);
+            System.out.println("No se pudo cargar la imagen: " + imageName);
+        }
+        
+        // Información del libro
+        Label titleLabel = new Label(title);
+        titleLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        titleLabel.setTextFill(Color.web("#2c3e50"));
+        titleLabel.setWrapText(true);
+        titleLabel.setAlignment(Pos.CENTER);
+        titleLabel.setMaxWidth(200);
+        
+        Label authorLabel = new Label(author);
+        authorLabel.setFont(Font.font("System", 12));
+        authorLabel.setTextFill(Color.web("#7f8c8d"));
+        authorLabel.setWrapText(true);
+        authorLabel.setAlignment(Pos.CENTER);
+        authorLabel.setMaxWidth(200);
+        
+        // Botón de acción con color pastel
+        Button actionBtn = new Button("Leer ahora");
+        actionBtn.setStyle("-fx-background-color: #b8e6d3; " +
+                          "-fx-text-fill: #2c3e50; " +
+                          "-fx-font-size: 12px; " +
+                          "-fx-font-weight: bold; " +
+                          "-fx-padding: 8 16; " +
+                          "-fx-background-radius: 20; " +
+                          "-fx-border: none;");
+        
+        actionBtn.setOnAction(e -> showBookDetails(title, author));
+        
+        // Solo agregar la imagen si se cargó correctamente
+        if (bookCover.getImage() != null) {
+            bookCard.getChildren().addAll(bookCover, titleLabel, authorLabel, actionBtn);
+        } else {
+            bookCard.getChildren().addAll(titleLabel, authorLabel, actionBtn);
+        }
+        
+        // Efecto hover
+        bookCard.setOnMouseEntered(e -> {
+            bookCard.setStyle("-fx-background-color: white; " +
+                             "-fx-background-radius: 12; " +
+                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5); " +
+                             "-fx-cursor: hand;");
+        });
+        
+        bookCard.setOnMouseExited(e -> {
+            bookCard.setStyle("-fx-background-color: white; " +
+                             "-fx-background-radius: 12; " +
+                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        });
+        
+        return bookCard;
+    }    private void showBookDetails(String title, String author) {
         showAlert("Detalles del Libro", 
                  "📖 Título: " + title + "\n" +
                  "✍️ Autor: " + author + "\n\n" +
