@@ -73,13 +73,13 @@ public class App extends Application {
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/logo.png"));
             logoIcon.setImage(logoImage);
-            logoIcon.setFitHeight(40);
-            logoIcon.setFitWidth(40);
+            logoIcon.setFitHeight(80);
+            logoIcon.setFitWidth(80);
             logoIcon.setPreserveRatio(true);
         } catch (Exception e) {
             // Fallback al emoji si no se puede cargar la imagen
             Label fallbackLogo = new Label("📚");
-            fallbackLogo.setFont(Font.font("System", 32));
+            fallbackLogo.setFont(Font.font("System", 52));
         }
 
         VBox titleSection = new VBox(2);
